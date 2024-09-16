@@ -6,7 +6,8 @@ from sqlalchemy import (
     Column,
     Integer,
     String,
-    Table
+    Table,
+    Date
 )
 
 from sqlalchemy.orm import (
@@ -17,7 +18,7 @@ BASE_DIR = os.path.dirname(os.path.realpath(__file__))
 
 connection_str = 'sqlite:///' + os.path.join(BASE_DIR , 'concert.db')
 
-engine = create_engine(connection_str)
+engine = create_engine('sqlite:///concert.db')
 
 Base = declarative_base()
 
@@ -39,11 +40,11 @@ class venue:
 
 # Creating the modals
 
-class Band:
+class Band(Base):
     __tablename__ = 'bands'
     id = Column(Integer() , primary_key = True)
-    name = Column(String() , nullable = False)
-    hometown = Column(String() , nullable = False)
+    name = Column(String(255) , nullable = False)
+    hometown = Column(String(255) , nullable = False)
     # Defining the relationship
     # venues = relationship(
     #     'Venue', 
@@ -54,11 +55,11 @@ class Band:
     def __rep__(self):
         return f"<The Customer is : {self.name}>"
     
-class Venue:
+class Venue(Base):
     __tablename__ = 'venues'
     id = Column(Integer() , primary_key = True)
-    title = Column(String() , nullable = False)
-    city = Column(String() , nullable = False)
+    title = Column(String(255) , nullable = False)
+    city = Column(String(255) , nullable = False)
     # Defining the relationship
     # bands = relationship(
     #     'Band',
@@ -71,12 +72,14 @@ class Venue:
     
 # The association table
 
-# concerts_table = Table(
-#     'concerts',
-#     Base.metadata,
-#     Column('band_id' , ForeignKey('bands.id'))
-#     Column('venue_id' , ForeignKey('venues.id'))
-# )
+concerts_table = Table(
+    'concerts',
+    Base.metadata,
+    Column('id', Integer, primary_key=True),
+    Column('band_id' , ForeignKey('bands.id')),
+    Column('venue_id' , ForeignKey('venues.id')),
+    Column('concert_date', Date) 
+)
 
 # Base class
 Base.metadata.create_all(engine)
